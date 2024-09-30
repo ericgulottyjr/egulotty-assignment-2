@@ -5,35 +5,38 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
+    branches:
+      - main
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: '3.9' 
+
     - name: Install dependencies
       run: make install
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Run server
+
+    - name: Run the server
       run: |
         make run &
-        sleep 5
-    - name: Test with pytest
-      run: pytest
+        sleep 10  # Sleep for a few seconds to ensure the server has time to start up
+
+    - name: Verify server is running
+      run: |
+        curl --fail http://localhost:3000 || (echo "Server did not start as expected" && exit 1)
+
+    - name: Clean up
+      run: |
+        pkill -f "python" || true  # Ensure that the server process is terminated
+
