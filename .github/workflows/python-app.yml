@@ -30,7 +30,7 @@ jobs:
     - name: Run the server
       run: |
         make run &
-        sleep 10  # Sleep for a few seconds to ensure the server has time to start up
+        sleep 5  # Sleep for a few seconds to ensure the server has time to start up
 
     - name: Verify server is running
       run: |
@@ -39,4 +39,3 @@ jobs:
     - name: Clean up
       run: |
         pkill -f "python" || true  # Ensure that the server process is terminated
-
